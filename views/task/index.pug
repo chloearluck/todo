@@ -1,0 +1,27 @@
+extends ../layout
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h3 My Tasks
+
+  table.table.table-striped.table-bordered
+    for task in tasks
+      tr
+        td= task.name
+        td
+          form(action='/task/delete', method='POST')
+            .form-group
+              input(type='hidden', name='_csrf', value=_csrf)
+              input(type='hidden', name='taskid', value=task._id)
+              .offset-sm-3.col-md-7.pl-2
+                button.btn.btn-danger(type='submit')
+                  i.fas.fa-trash-alt.fa-sm
+                  | Delete
+
+  form(method='POST' action='/task')
+    input(type='hidden', name='_csrf', value=_csrf)
+    input(type='hidden', name='userId', value=user._id)
+    div.form-group
+      input#name.form-control(type='text', placeholder='new item' name='name')
+    button.btn.btn-primary(type='submit') Add
+

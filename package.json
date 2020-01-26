@@ -1,0 +1,59 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "A web application for managing your to do lists",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chloearluck/todo"
+  },
+  "scripts": {
+    "postinstall": "npm rebuild node-sass",
+    "start": "node app.js",
+    "lint": "eslint \"**/*.js\""
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.12.0",
+    "@octokit/rest": "^16.36.0",
+    "bcrypt": "^3.0.7",
+    "body-parser": "^1.19.0",
+    "bootstrap": "^4.4.1",
+    "chalk": "^3.0.0",
+    "compression": "^1.7.4",
+    "connect-mongo": "^3.2.0",
+    "dotenv": "^8.2.0",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "express-flash": "^0.0.2",
+    "express-handlebars": "^3.1.0",
+    "express-session": "^1.17.0",
+    "express-status-monitor": "^1.2.8",
+    "jquery": "^3.4.1",
+    "lusca": "^1.6.1",
+    "mailchecker": "^3.3.3",
+    "moment": "^2.24.0",
+    "mongodb": "^3.5.2",
+    "mongoose": "^5.8.3",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.2",
+    "node-sass": "^4.13.0",
+    "node-sass-middleware": "^0.11.0",
+    "nodemailer": "^6.4.2",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "passport-oauth2-refresh": "^1.1.0",
+    "pug": "^2.0.4",
+    "request": "^2.88.0",
+    "validator": "^12.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-strongloop": "^2.1.0",
+    "eslint-plugin-chai-friendly": "^0.5.0",
+    "eslint-plugin-import": "^2.19.1"
+  },
+  "engines": {
+    "node": ">=10.18.0",
+    "npm": ">=6.13.4"
+  }
+}
