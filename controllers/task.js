@@ -34,12 +34,32 @@ exports.getTask = (req, res) => {
   });
 };
 
+// TO DO: make this a scheduled task instead of a rest call
+/**
+ * GET /task/refrech
+ * update the date on any overdue tasks
+ */
+exports.getTaskRefresh = (req, res, next) => {
+  const today = moment().startOf('day').toDate();
+  Task.updateMany({ date: { $lt: today } },
+    [{ $set: { daysOverdue: { $round: [{ $divide: [{ $subtract: [today, '$date'] }, 8.64e7] }] } } },
+      { $set: { date: today } }
+    ], (err, result) => {
+      if (err) { return next(err); }
+      console.log(result);
+      res.redirect('/task');
+    });
+};
+
+
 /**
  * POST /task
  * Create a new task.
  */
 exports.postTask = (req, res, next) => {
-  const task = new Task({ name: req.body.name, userId: req.body.userId, date: req.body.date });
+  const task = new Task({
+    name: req.body.name, userId: req.user._id, date: req.body.date, daysOverdue: 0
+  });
 
   task.save((err) => {
     if (err) { return next(err); }

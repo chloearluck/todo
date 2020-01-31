@@ -18,7 +18,6 @@ block content
                     input(type='submit', value='Delete')
           form(method='POST' action='/task')
             input(type='hidden', name='_csrf', value=_csrf)
-            input(type='hidden', name='userId', value=user._id)
             input(type='hidden', name='date', value=taskDay.date)
             div.form-group
               input#name.form-control(type='text', placeholder='new item' name='name')
