@@ -1,14 +1,16 @@
 const async = require('async');
 const moment = require('moment');
 const Task = require('../models/Task');
+const Day = require('../models/Day');
 
 /**
  * GET /task
  * List of user's tasks.
  */
-exports.getTask = (req, res) => {
+exports.getTask = (req, res, next) => {
   const taskDays = [];
   const ndays = 4;
+  const taskMap = new Map();
   if (!req.user) {
     return res.redirect('/login');
   }
@@ -19,24 +21,56 @@ exports.getTask = (req, res) => {
     taskDays.push({ date: date.toDate(), tasks: [], dateString: dateString });
   }
 
-  async.each(taskDays, (day, callback) => {
-    Task.find({ userId: req.user._id, date: day.date }, (err, tasks, next) => {
+  async.parallel([(callback) => {
+    Task.find({ date: { $gte: taskDays[0].date }, date: { $lte: taskDays[ndays - 1].date } },
+      (err, tasks) => {
+        if (err) { return next(err); }
+        for (let i = 0; i < tasks.length; i++) {
+          taskMap[tasks[i]._id] = tasks[i];
+        }
+        callback();
+      });
+  }, (callback) => {
+    async.each(taskDays, (taskDay, callback2) => {
+      Day.findOne({ date: taskDay.date }, (err, day) => {
+        if (err) { return next(err); }
+        if (day) {
+          taskDay.task_ids = day.task_ids;
+          taskDay.day_id = day._id;
+          callback2();
+        } else {
+          Day.create({ date: taskDay.date, task_ids: [] }, (err, day) => {
+            if (err) { return next(err); }
+            taskDay.task_ids = day.task_ids;
+            taskDay.day_id = day._id;
+            callback2();
+          });
+        }
+      });
+    }, (err) => {
       if (err) { return next(err); }
-      day.tasks = tasks;
       callback();
     });
-  }, (err) => {
-    if (err) { return err; }
-    res.render('task/index', {
+  }], (err) => {
+    if (err) { return next(err); }
+    for (let i = 0; i < ndays; i++) {
+      for (let j = 0; j < taskDays[i].task_ids.length; j++) {
+        const taskId = taskDays[i].task_ids[j];
+        taskDays[i].tasks.push(taskMap[taskId]);
+      }
+    }
+
+    res.render('task', {
       title: 'My To Do List',
       taskDays
     });
   });
 };
 
+
 // TO DO: make this a scheduled task instead of a rest call
 /**
- * GET /task/refrech
+ * GET /task/refresh
  * update the date on any overdue tasks
  */
 exports.getTaskRefresh = (req, res, next) => {
@@ -61,21 +95,25 @@ exports.postTask = (req, res, next) => {
     name: req.body.name, userId: req.user._id, date: req.body.date, daysOverdue: 0
   });
 
-  task.save((err) => {
+  task.save((err, createdTask) => {
     if (err) { return next(err); }
+    Day.findByIdAndUpdate(req.body.dayId, { $push: { task_ids: createdTask._id } }, (err) => {
+      if (err) { return next(err); }
+      res.redirect('/task');
+    });
   });
-
-  res.redirect('/task');
 };
-
 
 /**
  * POST /task/delete
  * Delete task.
  */
 exports.postDeleteTask = (req, res, next) => {
-  Task.deleteOne({ _id: req.body.taskid }, (err) => {
+  Task.deleteOne({ _id: req.body.taskId }, (err) => {
     if (err) { return next(err); }
-    res.redirect('/task');
+    Day.findByIdAndUpdate(req.body.dayId, { $pull: { task_ids: req.body.taskId } }, (err) => {
+      if (err) { return next(err); }
+      res.redirect('/task');
+    });
   });
 };

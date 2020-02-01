@@ -14,10 +14,12 @@ block content
                 form(action='/task/delete', method='POST')
                   .form-group
                     input(type='hidden', name='_csrf', value=_csrf)
-                    input(type='hidden', name='taskid', value=task._id)
+                    input(type='hidden', name='taskId', value=task._id)
+                    input(type='hidden', name='dayId', value=taskDay.day_id)
                     input(type='submit', value='Delete')
           form(method='POST' action='/task')
             input(type='hidden', name='_csrf', value=_csrf)
+            input(type='hidden', name='dayId', value=taskDay.day_id)
             input(type='hidden', name='date', value=taskDay.date)
             div.form-group
               input#name.form-control(type='text', placeholder='new item' name='name')
