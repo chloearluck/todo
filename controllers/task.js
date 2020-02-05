@@ -22,24 +22,27 @@ exports.getTask = (req, res, next) => {
   }
 
   async.parallel([(callback) => {
-    Task.find({ date: { $gte: taskDays[0].date }, date: { $lte: taskDays[ndays - 1].date } },
-      (err, tasks) => {
-        if (err) { return next(err); }
-        for (let i = 0; i < tasks.length; i++) {
-          taskMap[tasks[i]._id] = tasks[i];
-        }
-        callback();
-      });
+    Task.find({
+      date: { $gte: taskDays[0].date },
+      date: { $lte: taskDays[ndays - 1].date },
+      userId: req.user._id
+    }, (err, tasks) => {
+      if (err) { return next(err); }
+      for (let i = 0; i < tasks.length; i++) {
+        taskMap[tasks[i]._id] = tasks[i];
+      }
+      callback();
+    });
   }, (callback) => {
     async.each(taskDays, (taskDay, callback2) => {
-      Day.findOne({ date: taskDay.date }, (err, day) => {
+      Day.findOne({ date: taskDay.date, userId: req.user._id }, (err, day) => {
         if (err) { return next(err); }
         if (day) {
           taskDay.task_ids = day.task_ids;
           taskDay.day_id = day._id;
           callback2();
         } else {
-          Day.create({ date: taskDay.date, task_ids: [] }, (err, day) => {
+          Day.create({ date: taskDay.date, task_ids: [], userId: req.user._id }, (err, day) => {
             if (err) { return next(err); }
             taskDay.task_ids = day.task_ids;
             taskDay.day_id = day._id;
@@ -74,17 +77,62 @@ exports.getTask = (req, res, next) => {
  * update the date on any overdue tasks
  */
 exports.getTaskRefresh = (req, res, next) => {
-  const today = moment().startOf('day').toDate();
-  Task.updateMany({ date: { $lt: today } },
-    [{ $set: { daysOverdue: { $round: [{ $divide: [{ $subtract: [today, '$date'] }, 8.64e7] }] } } },
-      { $set: { date: today } }
-    ], (err, result) => {
+  const findOrCreateDay = (query, doc, callback) => {
+    Day.findOne(query, (err, day) => {
       if (err) { return next(err); }
-      console.log(result);
-      res.redirect('/task');
+      if (day) {
+        callback(err, day);
+      } else {
+        Day.create(doc, (err, day) => {
+          if (err) { return next(err); }
+          callback(err, day);
+        });
+      }
     });
-};
+  };
 
+  const today = moment().startOf('day').toDate();
+  async.parallel([
+    (callbackTasksUpdated) => {
+      Task.updateMany({ date: { $lt: today } },
+        [{ $set: { daysOverdue: { $round: [{ $divide: [{ $subtract: [today, '$date'] }, 8.64e7] }] } } },
+          { $set: { date: today } }
+        ], (err, result) => {
+          if (err) { return next(err); }
+          console.log('task dates updated');
+          console.log(result);
+          callbackTasksUpdated();
+        });
+    },
+    (callbackDaysDeleted) => {
+      Day.find({ date: { $lt: today } }, (err, oldDays) => {
+        console.log('deleting the following days and appending tasks to today');
+        console.log(oldDays);
+        async.eachSeries(oldDays, (oldDay, callbackOldDayCopied) => {
+          findOrCreateDay({ date: today, userId: oldDay.userId },
+            { date: today, userId: oldDay.userId, task_ids: [] },
+            (err, day) => {
+              if (err) { return next(err); }
+              day.task_ids = oldDay.task_ids.concat(day.task_ids);
+              day.save((err) => {
+                if (err) { return next(err); }
+                Day.findByIdAndDelete(oldDay._id, (err) => {
+                  if (err) return next(err);
+                  callbackOldDayCopied();
+                });
+              });
+            });
+        }, (err) => {
+          if (err) { return next(err); }
+          callbackDaysDeleted();
+        });
+      });
+    }],
+  (err) => {
+    if (err) { return next(err); }
+    res.redirect('/task');
+  });
+};
 
 /**
  * POST /task
