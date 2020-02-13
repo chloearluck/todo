@@ -5,7 +5,8 @@ const taskSchema = new mongoose.Schema({
   name: String,
   userId: ObjectId,
   date: Date,
-  daysOverdue: Number
+  daysOverdue: Number,
+  completed: Boolean
 }, { timestamps: true });
 
 const Task = mongoose.model('Task', taskSchema);

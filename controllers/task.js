@@ -92,28 +92,42 @@ exports.getTaskRefresh = (req, res, next) => {
   };
 
   const today = moment().startOf('day').toDate();
-  async.parallel([
+  const overdue = [];
+  async.series([
+    (callbackOverdueListPopulated) => {
+      Task.find({ date: { $lt: today }, completed: false }, (err, tasks) => {
+        if (err) { return next(err); }
+        for (let i = 0; i < tasks.length; i++) {
+          overdue.push(tasks[i]._id.toString());
+        }
+        callbackOverdueListPopulated();
+      });
+    },
     (callbackTasksUpdated) => {
-      Task.updateMany({ date: { $lt: today } },
+      Task.updateMany({ date: { $lt: today }, completed: false },
         [{ $set: { daysOverdue: { $round: [{ $divide: [{ $subtract: [today, '$date'] }, 8.64e7] }] } } },
           { $set: { date: today } }
         ], (err, result) => {
           if (err) { return next(err); }
-          console.log('task dates updated');
           console.log(result);
           callbackTasksUpdated();
         });
     },
     (callbackDaysDeleted) => {
       Day.find({ date: { $lt: today } }, (err, oldDays) => {
-        console.log('deleting the following days and appending tasks to today');
-        console.log(oldDays);
         async.eachSeries(oldDays, (oldDay, callbackOldDayCopied) => {
           findOrCreateDay({ date: today, userId: oldDay.userId },
             { date: today, userId: oldDay.userId, task_ids: [] },
             (err, day) => {
               if (err) { return next(err); }
-              day.task_ids = oldDay.task_ids.concat(day.task_ids);
+              const toPrepend = [];
+              for (let i = 0; i < oldDay.task_ids.length; i++) {
+                if (overdue.includes(oldDay.task_ids[i]._id.toString())) {
+                  toPrepend.push(oldDay.task_ids[i]);
+                }
+              }
+
+              day.task_ids = toPrepend.concat(day.task_ids);
               day.save((err) => {
                 if (err) { return next(err); }
                 Day.findByIdAndDelete(oldDay._id, (err) => {
@@ -140,7 +154,7 @@ exports.getTaskRefresh = (req, res, next) => {
  */
 exports.postTask = (req, res, next) => {
   const task = new Task({
-    name: req.body.name, userId: req.user._id, date: req.body.date, daysOverdue: 0
+    name: req.body.name, userId: req.user._id, date: req.body.date, daysOverdue: 0, completed: false
   });
 
   task.save((err, createdTask) => {
@@ -163,5 +177,24 @@ exports.postDeleteTask = (req, res, next) => {
       if (err) { return next(err); }
       res.redirect('/task');
     });
+  });
+};
+
+/**
+ * POST /task/completion
+ * Updated the completed status of a task
+ */
+exports.postTaskCompletion = (req, res, next) => {
+  let completed;
+
+  if (req.body.completed && req.body.completed === 'on') {
+    completed = true;
+  } else {
+    completed = false;
+  }
+
+  Task.findByIdAndUpdate(req.body.taskId, { completed: completed }, (err) => {
+    if (err) { return next(err); }
+    res.redirect('/task');
   });
 };

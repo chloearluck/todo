@@ -10,7 +10,16 @@ block content
           ul.list-group
             for task in taskDay.tasks
               li.list-group-item
-                a=task.name
+                form(action='/task/completion', method='POST')
+                  .form-check
+                    input(type='checkbox', class='form-check-input' checked=task.completed, onchange='this.form.submit()', name='completed')
+                    input(type='hidden', name='_csrf', value=_csrf)
+                    input(type='hidden', name='taskId', value=task._id)
+                    if task.completed
+                      label.form-check-label
+                        strike=task.name
+                    else
+                      label.form-check-label=task.name
                 form(action='/task/delete', method='POST')
                   .form-group
                     input(type='hidden', name='_csrf', value=_csrf)
