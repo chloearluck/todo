@@ -1,7 +1,9 @@
 const async = require('async');
 const moment = require('moment');
+const schedule = require('node-schedule');
 const Task = require('../models/Task');
 const Day = require('../models/Day');
+
 
 /**
  * GET /task
@@ -71,20 +73,20 @@ exports.getTask = (req, res, next) => {
 };
 
 
-// TO DO: make this a scheduled task instead of a rest call
 /**
- * GET /task/refresh
- * update the date on any overdue tasks
+ * Refresh tasks daily at midnight
+ * Uncompleted tasks are moved to the next day, old days are deleted.
  */
-exports.getTaskRefresh = (req, res, next) => {
+schedule.scheduleJob('0 5 * * *', () => { //midnight est, 5am utc
+  console.log('--- DAILY REFRESH IS RUNNING ---');
   const findOrCreateDay = (query, doc, callback) => {
     Day.findOne(query, (err, day) => {
-      if (err) { return next(err); }
+      if (err) { return err; }
       if (day) {
         callback(err, day);
       } else {
         Day.create(doc, (err, day) => {
-          if (err) { return next(err); }
+          if (err) { return err; }
           callback(err, day);
         });
       }
@@ -96,7 +98,7 @@ exports.getTaskRefresh = (req, res, next) => {
   async.series([
     (callbackOverdueListPopulated) => {
       Task.find({ date: { $lt: today }, completed: false }, (err, tasks) => {
-        if (err) { return next(err); }
+        if (err) { return err; }
         for (let i = 0; i < tasks.length; i++) {
           overdue.push(tasks[i]._id.toString());
         }
@@ -108,7 +110,7 @@ exports.getTaskRefresh = (req, res, next) => {
         [{ $set: { daysOverdue: { $round: [{ $divide: [{ $subtract: [today, '$date'] }, 8.64e7] }] } } },
           { $set: { date: today } }
         ], (err, result) => {
-          if (err) { return next(err); }
+          if (err) { return err; }
           console.log(result);
           callbackTasksUpdated();
         });
@@ -119,7 +121,7 @@ exports.getTaskRefresh = (req, res, next) => {
           findOrCreateDay({ date: today, userId: oldDay.userId },
             { date: today, userId: oldDay.userId, task_ids: [] },
             (err, day) => {
-              if (err) { return next(err); }
+              if (err) { return err; }
               const toPrepend = [];
               for (let i = 0; i < oldDay.task_ids.length; i++) {
                 if (overdue.includes(oldDay.task_ids[i]._id.toString())) {
@@ -129,24 +131,24 @@ exports.getTaskRefresh = (req, res, next) => {
 
               day.task_ids = toPrepend.concat(day.task_ids);
               day.save((err) => {
-                if (err) { return next(err); }
+                if (err) { return err; }
                 Day.findByIdAndDelete(oldDay._id, (err) => {
-                  if (err) return next(err);
+                  if (err) return err;
                   callbackOldDayCopied();
                 });
               });
             });
         }, (err) => {
-          if (err) { return next(err); }
+          if (err) { return err; }
           callbackDaysDeleted();
         });
       });
     }],
   (err) => {
-    if (err) { return next(err); }
-    res.redirect('/task');
+    if (err) { return err; }
+    console.log('refresh complete');
   });
-};
+});
 
 /**
  * POST /task

@@ -142,7 +142,6 @@ app.post('/account/delete', passportConfig.isAuthenticated, userController.postD
  * Task routes.
  */
 app.get('/task', taskController.getTask);
-app.get('/task/refresh', taskController.getTaskRefresh);
 app.post('/task', taskController.postTask);
 app.post('/task/delete', taskController.postDeleteTask);
 app.post('/task/completion', taskController.postTaskCompletion);
