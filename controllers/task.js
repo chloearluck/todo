@@ -19,7 +19,7 @@ exports.getTask = (req, res, next) => {
 
   for (let i = 0; i < ndays; i++) {
     const date = moment().startOf('day').add(i, 'days');
-    const dateString = (i === 0 ? 'Today' : (i === 1 ? 'Tomorrow' : date.format('MMM D')));
+    const dateString = (i === 0 ? 'Today' : (i === 1 ? 'Tomorrow' : date.format('dddd, MMM D')));
     taskDays.push({ date: date.toDate(), tasks: [], dateString: dateString });
   }
 
