@@ -10,7 +10,7 @@ block content
           ul.list-group
             for task in taskDay.tasks
               li.list-group-item
-                form(action='/task/completion', method='POST')
+                form(action='/task/completion', method='POST', autocomplete='off')
                   .form-check
                     input(type='checkbox', class='form-check-input' checked=task.completed, onchange='this.form.submit()', name='completed')
                     input(type='hidden', name='_csrf', value=_csrf)
@@ -20,13 +20,13 @@ block content
                         strike=task.name
                     else
                       label.form-check-label=task.name
-                form(action='/task/delete', method='POST')
+                form(action='/task/delete', method='POST', autocomplete='off')
                   .form-group
                     input(type='hidden', name='_csrf', value=_csrf)
                     input(type='hidden', name='taskId', value=task._id)
                     input(type='hidden', name='dayId', value=taskDay.day_id)
                     input(type='submit', value='Delete')
-          form(method='POST' action='/task')
+          form(method='POST' action='/task', autocomplete='off')
             input(type='hidden', name='_csrf', value=_csrf)
             input(type='hidden', name='dayId', value=taskDay.day_id)
             input(type='hidden', name='date', value=taskDay.date)
