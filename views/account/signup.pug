@@ -5,6 +5,7 @@ block content
     h3 Sign up
   form(id='signup-form', method='POST')
     input(type='hidden', name='_csrf', value=_csrf)
+    input(type='hidden', name='timezone', value=Intl.DateTimeFormat().resolvedOptions().timeZone)
     .form-group.row
       label.col-md-3.col-form-label.font-weight-bold.text-right(for='email') Email
       .col-md-7

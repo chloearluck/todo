@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const passport = require('passport');
 const validator = require('validator');
 const mailChecker = require('mailchecker');
+const moment = require('moment');
 const User = require('../models/User');
 
 const randomBytesAsync = promisify(crypto.randomBytes);
@@ -94,7 +95,8 @@ exports.postSignup = (req, res, next) => {
 
   const user = new User({
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
+    timezone: req.body.timezone
   });
 
   User.findOne({ email: req.body.email }, (err, existingUser) => {
@@ -120,8 +122,11 @@ exports.postSignup = (req, res, next) => {
  * Profile page.
  */
 exports.getAccount = (req, res) => {
+  const timezones = moment.tz.names();
+
   res.render('account/profile', {
-    title: 'Account Management'
+    title: 'Account Management',
+    timezones
   });
 };
 
@@ -143,6 +148,7 @@ exports.postUpdateProfile = (req, res, next) => {
     if (err) { return next(err); }
     if (user.email !== req.body.email) user.emailVerified = false;
     user.email = req.body.email || '';
+    user.timezone = req.body.timezone || 'America/Los_Angeles';
     user.profile.name = req.body.name || '';
     user.profile.gender = req.body.gender || '';
     user.profile.location = req.body.location || '';

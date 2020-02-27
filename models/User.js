@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: Date,
   emailVerificationToken: String,
   emailVerified: Boolean,
+  timezone: String,
 
   tokens: Array,
 

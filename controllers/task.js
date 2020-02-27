@@ -13,12 +13,15 @@ exports.getTask = (req, res, next) => {
   const taskDays = [];
   const ndays = 4;
   const taskMap = new Map();
+  const today_tz = moment().tz(req.user.timezone || 'America/Los_Angeles');
+  const today = moment.tz(today_tz.format('YYYY-MM-DD 00:00'), 'UTC');
+
   if (!req.user) {
     return res.redirect('/login');
   }
 
   for (let i = 0; i < ndays; i++) {
-    const date = moment().startOf('day').add(i, 'days');
+    const date = today.clone().add(i, 'days');
     const dateString = (i === 0 ? 'Today' : (i === 1 ? 'Tomorrow' : date.format('dddd, MMM D')));
     taskDays.push({ date: date.toDate(), tasks: [], dateString: dateString });
   }

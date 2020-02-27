@@ -22,6 +22,15 @@ block content
       label.col-md-3.col-form-label.font-weight-bold.text-right(for='name') Name
       .col-md-7
         input.form-control(type='text', name='name', id='name', value=user.profile.name, autocomplete='name')
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='timezone') Time Zone
+      .col-md-7
+        select.form-control(name='timezone', id='timezone')
+          for tz in timezones
+            if tz === user.timezone
+              option(value=tz, selected='selected')=tz
+            else
+              option(value=tz)=tz
     .form-group
       .offset-sm-3.col-md-7.pl-2
         button.btn.btn.btn-primary(type='submit')
