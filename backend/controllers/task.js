@@ -13,8 +13,8 @@ exports.getTask = (req, res, next) => {
   const taskDays = [];
   const ndays = 4;
   const taskMap = new Map();
-  const today_tz = moment().tz(req.user.timezone || 'America/Los_Angeles');
-  const today = moment.tz(today_tz.format('YYYY-MM-DD 00:00'), 'UTC');
+  const todayTZ = moment().tz(req.user.timezone || 'America/Los_Angeles');
+  const today = moment.tz(todayTZ.format('YYYY-MM-DD 00:00'), 'UTC');
 
   if (!req.user) {
     return res.redirect('/login');
@@ -68,10 +68,7 @@ exports.getTask = (req, res, next) => {
       }
     }
 
-    res.render('task', {
-      title: 'My To Do List',
-      taskDays
-    });
+    res.json(taskDays);
   });
 };
 
@@ -80,7 +77,7 @@ exports.getTask = (req, res, next) => {
  * Refresh tasks daily at midnight
  * Uncompleted tasks are moved to the next day, old days are deleted.
  */
-schedule.scheduleJob('0 5 * * *', () => { //midnight est, 5am utc
+schedule.scheduleJob('0 5 * * *', () => { // midnight est, 5am utc
   console.log('--- DAILY REFRESH IS RUNNING ---');
   const findOrCreateDay = (query, doc, callback) => {
     Day.findOne(query, (err, day) => {
@@ -166,7 +163,7 @@ exports.postTask = (req, res, next) => {
     if (err) { return next(err); }
     Day.findByIdAndUpdate(req.body.dayId, { $push: { task_ids: createdTask._id } }, (err) => {
       if (err) { return next(err); }
-      res.redirect('/task');
+      res.status(201).send();
     });
   });
 };
@@ -180,7 +177,7 @@ exports.postDeleteTask = (req, res, next) => {
     if (err) { return next(err); }
     Day.findByIdAndUpdate(req.body.dayId, { $pull: { task_ids: req.body.taskId } }, (err) => {
       if (err) { return next(err); }
-      res.redirect('/task');
+      res.status(202).send();
     });
   });
 };
@@ -200,6 +197,6 @@ exports.postTaskCompletion = (req, res, next) => {
 
   Task.findByIdAndUpdate(req.body.taskId, { completed: completed }, (err) => {
     if (err) { return next(err); }
-    res.redirect('/task');
+    res.status(202).send();
   });
 };
