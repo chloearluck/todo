@@ -106,6 +106,7 @@ app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawes
  * Primary app routes.
  */
 app.get('/', homeController.index);
+app.get('/user', userController.getUser);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
 // app.get('/forgot', userController.getForgot);

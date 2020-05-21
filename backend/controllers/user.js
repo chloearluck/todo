@@ -2,6 +2,19 @@ const passport = require('passport');
 const validator = require('validator');
 const User = require('../models/User');
 
+
+/**
+ * GET /user
+ * Return current user email address if authenticated
+ */
+exports.getUser = (req, res, next) => {
+  if (!req.user) {
+    return res.status(204);
+  }
+  return res.json({email: req.user.email});
+}
+
+
 /**
  * POST /login
  * Sign in using email and password.
