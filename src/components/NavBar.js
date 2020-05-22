@@ -22,34 +22,49 @@ class NavBar extends Component {
 
   render() {
     return (
-      <nav className="navbar navbar-dark bg-primary fixed-top">
-        <Link className="navbar-brand" to="/">
-          To Do App
-        </Link>
-        {
-          !this.props.isAuthenticated && 
-          <Link to='/login'>
-          <button className="btn btn-dark">Log in</button>
-          </Link>
-        }
-        {
-          !this.props.isAuthenticated && 
-          <Link to='/signup'>
-          <button className="btn btn-dark">Sign up</button>
-          </Link>
-        }
-        {
-          this.props.isAuthenticated &&
-          <div> Hello, {this.props.email} </div>
-        }
-        {
-          this.props.isAuthenticated &&
-          <button className='btn btn-dark' onClick={this.logout}>Logout</button>
-        }
-      </nav>
+      <div className="navbar navbar-light fixed-top navbar-expand-lg bg-light">
+        <div className="container"><a className="navbar-brand" href="/"><i className="fas fa-cube"></i>To Do App</a>
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"><span className="sr-only">Toggle navigation</span><span className="navbar-toggler-icon"></span></button>
+          <div className="collapse navbar-collapse">
+            <ul className="nav navbar-nav">
+              <Link to='/'>
+                <li className="nav-item"><p className="nav-link">Home</p></li>
+              </Link>
+              <Link to='/about'>
+                <li className="nav-item"><p className="nav-link">About</p></li>
+              </Link>
+            </ul>
+
+            <ul className="nav navbar-nav ml-auto">
+            { !this.props.isAuthenticated &&
+              <React.Fragment>
+              <Link to='/login'>
+                <li className="nav-item"><p className="nav-link">Login</p></li>
+              </Link>
+              <Link to='/signup'>
+                <li className="nav-item"><p className="nav-link">Signup</p></li>
+              </Link>
+              </React.Fragment>
+            }
+
+            { this.props.isAuthenticated &&
+              <React.Fragment>
+              <li className="nav-item"><p className="nav-link disabled">Hello, {this.props.email}</p></li>
+              <Link to='/account'>
+                <li className="nav-item"><p className="nav-link">Account</p></li>
+              </Link>
+              <Link to='/'>
+                <li className="nav-item"><p className="nav-link" onClick={this.logout}>Logout</p></li>
+              </Link>
+              </React.Fragment>
+            }
+
+            </ul>
+          </div>
+        </div>
+      </div>
     );
-
   }
-
 }
+
 export default NavBar;
