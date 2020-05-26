@@ -187,15 +187,8 @@ exports.postDeleteTask = (req, res, next) => {
  * Updated the completed status of a task
  */
 exports.postTaskCompletion = (req, res, next) => {
-  let completed;
-
-  if (req.body.completed && req.body.completed === 'on') {
-    completed = true;
-  } else {
-    completed = false;
-  }
-
-  Task.findByIdAndUpdate(req.body.taskId, { completed: completed }, (err) => {
+  console.log(req.body);
+  Task.findByIdAndUpdate(req.body.taskId, { completed: req.body.completed }, (err) => {
     if (err) { return next(err); }
     res.status(202).send();
   });

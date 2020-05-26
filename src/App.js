@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {Route} from 'react-router-dom';
+import {Route, Link} from 'react-router-dom';
 import SignUpForm from './components/sign-up.js'
 import LoginForm from './components/login.js'
 import NavBar from './components/NavBar.js'
+import TaskDisplay from './components/task/TaskDisplay.js'
 import {BrowserRouter} from 'react-router-dom';
 import axios from 'axios';
 
@@ -55,6 +56,22 @@ class App extends Component {
 
         <BrowserRouter>
         <NavBar isAuthenticated={this.state.isAuthenticated} email={this.state.email} updateUser={this.updateUser}/>
+
+        <Route
+          exact path="/"
+          render={() =>
+            <React.Fragment>
+            {
+              !this.state.isAuthenticated &&
+              <div> Welcome to my app. Please <Link to='/login'>Login</Link> or <Link to='/signup'>Signup</Link> to continue. </div>
+            }
+            {
+              this.state.isAuthenticated &&
+              <TaskDisplay/>
+            }
+            </React.Fragment>
+          }
+        />
         <Route
           exact path="/login"
           render={() =>
