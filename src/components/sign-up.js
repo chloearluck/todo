@@ -30,7 +30,7 @@ class SignUpForm extends Component {
       console.log(res);
       if (res.status === 200) {
         this.setState({ redirect: '/'});
-        this.updateUser(this.state.email);
+        this.props.updateUser(this.state.email);
       }
     })
     .catch( (err) => {
@@ -42,36 +42,35 @@ class SignUpForm extends Component {
     if (this.state.redirect) {
       return <Redirect to={this.state.redirect} />
     }
+
     return (
-      <div className="SignupForm">
-        <h1>Signup form</h1>
-        <label htmlFor="email">Email: </label>
-        <input
-          type="text"
-          name="email"
-          value={this.state.email}
-          onChange={this.handleChange}
-        />
-        <br/>
-        <label htmlFor="password">Password: </label>
-        <input
-          type="password"
-          name="password"
-          value={this.state.password}
-          onChange={this.handleChange}
-        />
-        <br/>
-        <label htmlFor="confirmPassword"> Confirm Password: </label>
-        <input
-          type="password"
-          name="confirmPassword"
-          value={this.state.confirmPassword}
-          onChange={this.handleChange}
-        />
-        <br/>
-        <button onClick={this.handleSubmit}>Sign up</button>
+      <div className="container-sm">
+      <form onSubmit={this.handleSubmit}>
+      <div className="mx-auto" style={{width: "400px"}}>
+
+        <div className="form-group">
+          <label htmlFor="emailInput">Email:</label>
+          <input className="form-control" type="email" value={this.state.email} name="email" id="emailInput" onChange={this.handleChange}/>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="passwordInput">Password:</label>
+          <input className="form-control" type="password" value={this.state.password} name="password" id="passwordInput" onChange={this.handleChange}/>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="confirmPasswordInput">Password:</label>
+          <input className="form-control" type="password" value={this.state.confirmPassword} name="confirmPassword" id="confirmPasswordInput" onChange={this.handleChange}/>
+        </div>
+
+        <div className="form-group">
+          <button className="btn btn-primary" type="submit" value="Submit">Sign up</button>
+        </div>
+
       </div>
-    )
+      </form>
+      </div>
+    );
   }
 }
 

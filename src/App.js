@@ -4,6 +4,7 @@ import SignUpForm from './components/sign-up.js'
 import LoginForm from './components/login.js'
 import NavBar from './components/NavBar.js'
 import TaskDisplay from './components/task/TaskDisplay.js'
+import Account from './components/Account.js'
 import {BrowserRouter} from 'react-router-dom';
 import axios from 'axios';
 
@@ -27,8 +28,10 @@ class App extends Component {
 
   updateUser(email) {
     if (email) {
+      console.log('logged in as '+email);
       this.setState({isAuthenticated: true, email: email});
     } else {
+      console.log('logged out');
       this.setState({isAuthenticated: false, email: null});
     }
   }
@@ -51,6 +54,11 @@ class App extends Component {
   }
 
   render() {
+    const unauthorizedMessage = (
+              !this.state.isAuthenticated &&
+              <div> Welcome to my app. Please <Link to='/login'>Login</Link> or <Link to='/signup'>Signup</Link> to continue. </div>
+            );
+
     return (
       <div className="App">
 
@@ -61,10 +69,7 @@ class App extends Component {
           exact path="/"
           render={() =>
             <React.Fragment>
-            {
-              !this.state.isAuthenticated &&
-              <div> Welcome to my app. Please <Link to='/login'>Login</Link> or <Link to='/signup'>Signup</Link> to continue. </div>
-            }
+            { unauthorizedMessage }
             {
               this.state.isAuthenticated &&
               <TaskDisplay/>
@@ -85,6 +90,16 @@ class App extends Component {
             <SignUpForm
               updateUser={this.updateUser}
             />}
+        />
+        <Route
+          exact path="/account"
+          render={() =>
+            <React.Fragment>
+            { unauthorizedMessage }
+            {this.state.isAuthenticated &&
+            <Account updateUser={this.updateUser} />}
+            </React.Fragment>
+          }
         />
         </BrowserRouter>
 

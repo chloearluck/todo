@@ -22,7 +22,7 @@ class NavBar extends Component {
 
   render() {
     return (
-      <div className="navbar navbar-light fixed-top navbar-expand-lg bg-light">
+      <div className="navbar navbar-light fixed-top navbar-expand-sm bg-light">
         <div className="container"><a className="navbar-brand" href="/"><i className="fas fa-cube"></i>To Do App</a>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"><span className="sr-only">Toggle navigation</span><span className="navbar-toggler-icon"></span></button>
           <div className="collapse navbar-collapse">
