@@ -2,6 +2,10 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import * as moment from 'moment-timezone';
 
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+
 class Account extends Component {
   constructor() {
     super();
@@ -79,37 +83,26 @@ class Account extends Component {
     if (!this.state.email) return null;
 
     return (
-      <div className="container-sm">
-      <form onSubmit={this.handleSubmit}>
-      <div className="mx-auto" style={{width: "400px"}}>
+      <Container>
+        <div className="mx-auto" style={{width: "400px"}}>
+          <Form onSubmit={this.handleSubmit}>
+            <Form.Label>Email</Form.Label>
+            <Form.Control type="email" name="name" value={this.state.email} onChange={this.handleChange} autoComplete="off" />
 
-        <div className="form-group">
-          <label htmlFor="emailInput">Email:</label>
-          <input className="form-control" type="email" value={this.state.email} name="email" id="emailInput" onChange={this.handleChange}/>
+            <Form.Label>Time Zone:</Form.Label>
+            <Form.Control as="select" name="timezone" value={this.state.timezone} onChange={this.handleChange}>
+              { this.state.tznames.map( (tz) => {  return (<option key={tz}>{tz}</option>); } )}
+            </Form.Control>
+
+            <Button variant="primary" style={{marginTop: "10px"}} type="sumbit">Update</Button>
+          </Form>
+
+          <hr/>
+
+          <Form.Label>Delete Account (WARNING: cannot undo): </Form.Label>
+          <Button variant="primary" onClick={this.handleDelete}>Delete Account</Button>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="timezoneInput">Time Zone:</label>
-          <select className="form-control" name="timezone" id="timezoneInput" value={this.state.timezone} onChange={this.handleChange}>
-          { this.state.tznames.map( (tz) => {  return (<option key={tz}>{tz}</option>); } )}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <button className="btn btn-primary" type="submit" value="Submit">Update</button>
-        </div>
-
-      </div>
-      </form>
-
-      <div className="mx-auto" style={{width: "400px"}}>
-      <label htmlFor="deleteAccountButton">Delete Account (WARNING: cannot undo): </label>
-      <div className="form-group">
-        <button className="btn btn-primary" type="submit" value="Submit" id="deleteAccountButton" onClick={this.handleDelete}>Delete Account</button>
-      </div>
-      </div>
-
-      </div>
+      </Container>
     );
   }
 }

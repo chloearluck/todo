@@ -2,6 +2,11 @@ import React, {Component} from 'react';
 import { Redirect } from "react-router-dom";
 import axios from 'axios'
 
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+
+
 class LoginForm extends Component {
   constructor() {
     super()
@@ -43,27 +48,20 @@ class LoginForm extends Component {
     }
 
     return (
-      <div className="container-sm">
-      <form onSubmit={this.handleSubmit}>
-      <div className="mx-auto" style={{width: "400px"}}>
+      <Container>
+        <div className="mx-auto" style={{width: "400px"}}>
+          <Form onSubmit={this.handleSubmit}>
 
-        <div className="form-group">
-          <label htmlFor="emailInput">Email:</label>
-          <input className="form-control" type="email" value={this.state.email} name="email" id="emailInput" onChange={this.handleChange}/>
+            <Form.Label>Email: </Form.Label>
+            <Form.Control type="email" name="email" value={this.state.email} onChange={this.handleChange} />
+
+            <Form.Label>Password: </Form.Label>
+            <Form.Control type="password" name="password" value={this.state.password} onChange={this.handleChange} />
+
+            <Button variant="primary" style={{marginTop: "10px"}} type="sumbit">Login</Button>
+          </Form>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="passwordInput">Password:</label>
-          <input className="form-control" type="password" value={this.state.password} name="password" id="passwordInput" onChange={this.handleChange}/>
-        </div>
-
-        <div className="form-group">
-          <button className="btn btn-primary" type="submit" value="Submit">Log in</button>
-        </div>
-
-      </div>
-      </form>
-      </div>
+      </Container>
     );
   }
 }
