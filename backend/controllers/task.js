@@ -72,6 +72,15 @@ exports.getTask = (req, res, next) => {
   });
 };
 
+exports.getTaskById = (req, res, next) => {
+  console.log(req.params.id);
+  Task.findById(req.params.id, (err, task) => {
+    if (err) {
+      return next(err);
+    }
+    res.json(task);
+  })
+};
 
 /**
  * Refresh tasks daily at midnight
