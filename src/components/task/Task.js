@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 
+import ListGroup from 'react-bootstrap/ListGroup';
+import Form from 'react-bootstrap/Form';
+import Badge from 'react-bootstrap/Badge';
+
 class Task extends Component {
   constructor(props) {
     super();
@@ -11,6 +15,7 @@ class Task extends Component {
 
     this.componentDidMount = this.componentDidMount.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
     this.handleCheckChange = this.handleCheckChange.bind(this);
   }
 
@@ -52,18 +57,22 @@ class Task extends Component {
       })
   }
 
+  handleEdit(event) {
+    console.log('clicked edit');
+    this.props.updateModal(this.props.task._id);
+  }
+
   render() {
+    const label = (this.state.checked? <strike>{this.props.task.name}</strike> : this.props.task.name);
+
     return (
-    <li className="list-group-item d-flex justify-content-between align-items-center" key={this.props.task._id}>
-      <div className="form-check disabled">
-        <label className="form-check-label">
-          <input className="form-check-input" type="checkbox" checked={this.state.checked} disabled="" onChange={this.handleCheckChange}/>
-          {!this.state.checked && this.props.task.name}
-          {this.state.checked && <strike>{this.props.task.name}</strike>}
-        </label>
-      </div>
-      <span><button type="button" className="btn btn-sm remove-item" onClick={this.handleDelete}>x</button></span>
-    </li>);
+    <ListGroup.Item bsPrefix="list-group-item d-flex justify-content-between" onClick={this.handleEdit}>
+      <Form.Check type="checkbox" checked={this.state.checked} onChange={this.handleCheckChange} label={label}/>
+      <span>
+        <Badge variant="secondary" onClick={this.handleDelete}>x</Badge>
+      </span>
+    </ListGroup.Item>
+    );
   }
 }
 

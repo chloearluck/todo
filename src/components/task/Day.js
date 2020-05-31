@@ -2,6 +2,11 @@ import React, {Component} from 'react';
 import Task from './Task';
 import axios from 'axios';
 
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Button from 'react-bootstrap/Button';
+
 class Day extends Component {
   constructor(props) {
     super();
@@ -39,18 +44,16 @@ class Day extends Component {
 
   render() {
     return (
-    <div className="col-sm" key={this.props.day.day_id}>
+    <Col>
       <h4>{this.props.day.dateString}</h4>
-      <ul className="list-group">
-        {this.props.day.tasks.map( (task) => { return <Task task={task} key={task._id} day_id={this.props.day.day_id} getTasks={this.props.getTasks}/>; })}
-      </ul>
-      <form onSubmit={this.handleSubmit}>
-      <div className="form-group">
-        <input className="form-control" type="text" value={this.state.newTaskName} name="newTaskName" onChange={this.handleChange}/>
-      </div>
-      <button className="btn btn-primary" type="submit" value="Submit">Add</button>
-      </form>
-    </div>
+      <ListGroup>
+        {this.props.day.tasks.map( (task) => { return <Task task={task} key={task._id} day_id={this.props.day.day_id} getTasks={this.props.getTasks} updateModal={this.props.updateModal}/>; })}
+      </ListGroup>
+      <Form onSubmit={this.handleSubmit}>
+        <Form.Control type="text" value={this.state.newTaskName} name="newTaskName" onChange={this.handleChange} autoComplete="off" />
+        <Button variant="primary" type="sumbit">Add</Button>
+      </Form>
+    </Col>
     );
 
   }
