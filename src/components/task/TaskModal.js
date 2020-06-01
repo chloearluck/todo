@@ -54,13 +54,11 @@ class TaskModal extends Component {
         </Modal.Header>
         <Modal.Body>
 
-          <Form>
-            <Form.Label>Task Name</Form.Label>
-            <Form.Control type="text" name="name" value={this.state.name || ''} onChange={this.handleChange} autoComplete="off" />
+          <Form.Label>Task Name</Form.Label>
+          <Form.Control type="text" name="name" value={this.state.name || ''} onChange={this.handleChange} autoComplete="off" />
 
-            <Form.Label>Date</Form.Label>
-            <Form.Control type="date" name="date" value={this.state.date || ''} onChange={this.handleChange}/>
-          </Form>
+          <Form.Label>Date</Form.Label>
+          <Form.Control type="date" name="date" value={this.state.date || ''} onChange={this.handleChange}/>
 
         </Modal.Body>
         <Modal.Footer>
