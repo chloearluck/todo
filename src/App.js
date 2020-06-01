@@ -56,7 +56,7 @@ class App extends Component {
   render() {
     const unauthorizedMessage = (
               !this.state.isAuthenticated &&
-              <div> Welcome to my app. Please <Link to='/login'>Login</Link> or <Link to='/signup'>Signup</Link> to continue. </div>
+              <center> Welcome to my app. Please <Link to='/login'>Login</Link> or <Link to='/signup'>Signup</Link> to continue. </center>
             );
 
     return (
