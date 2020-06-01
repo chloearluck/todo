@@ -26,7 +26,7 @@ class Task extends Component {
   handleDelete(event) {
     event.stopPropagation();
 
-    axios.delete('/task/'+this.props.task._id, { dayId: this.props.day_id })
+    axios.post('/task/'+this.props.task._id+'/delete', { dayId: this.props.day_id })
       .then((res) => {
         if (res.status === 202) {
           this.props.getTasks();
