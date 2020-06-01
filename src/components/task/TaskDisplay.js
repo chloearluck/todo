@@ -59,7 +59,7 @@ class TaskDisplay extends Component {
     if (!this.state.tasks) return (<div> Loading... </div>)
 
     return (
-      <Container>
+      <Container fluid>
         <Row>
           {this.state.tasks.map( (day) => { return <Day day={day} key={day.day_id} getTasks={this.getTasks} updateModal={this.updateModal} />; })}
         </Row>

@@ -43,7 +43,7 @@ class Day extends Component {
   render() {
     if (!this.props.day) return null;
     return (
-    <Col>
+    <Col lg={3} md={6}> {/*on large viewports, each column takes up 3/12=1/4 of the screen, on medium 6/12=1/2*/}
       <h4>{this.props.day.dateString}</h4>
       <ListGroup>
         {this.props.day.tasks.map( (task) => { if (task) return <Task task={task} key={task._id} day_id={this.props.day.day_id} getTasks={this.props.getTasks} updateModal={this.props.updateModal}/>; else return null; })}
