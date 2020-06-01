@@ -25,9 +25,7 @@ class Day extends Component {
     axios.post('/task', {name: this.state.newTaskName, date: this.props.day.date, dayId: this.props.day.day_id})
       .then((res) => {
         if (res.status === 201) {
-          //trigger refresh of tasks
           this.props.getTasks();
-          //clear textbox
           this.setState({ newTaskName: ''});
         } else {
           //flash an error?
@@ -43,11 +41,12 @@ class Day extends Component {
   }
 
   render() {
+    if (!this.props.day) return null;
     return (
     <Col>
       <h4>{this.props.day.dateString}</h4>
       <ListGroup>
-        {this.props.day.tasks.map( (task) => { return <Task task={task} key={task._id} day_id={this.props.day.day_id} getTasks={this.props.getTasks} updateModal={this.props.updateModal}/>; })}
+        {this.props.day.tasks.map( (task) => { if (task) return <Task task={task} key={task._id} day_id={this.props.day.day_id} getTasks={this.props.getTasks} updateModal={this.props.updateModal}/>; else return null; })}
       </ListGroup>
       <Form onSubmit={this.handleSubmit}>
         <Form.Control type="text" value={this.state.newTaskName} name="newTaskName" onChange={this.handleChange} autoComplete="off" />

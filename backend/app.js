@@ -129,10 +129,11 @@ app.post('/account/delete', passportConfig.isAuthenticated, userController.postD
  * Task routes.
  */
 app.get('/task', passportConfig.isAuthenticated, taskController.getTask);
-app.get('/task/:id', passportConfig.isAuthenticated, taskController.getTaskById);
 app.post('/task', passportConfig.isAuthenticated, taskController.postTask);
-app.post('/task/delete', passportConfig.isAuthenticated, taskController.postDeleteTask);
-app.post('/task/completion', passportConfig.isAuthenticated, taskController.postTaskCompletion);
+app.get('/task/:id', passportConfig.isAuthenticated, taskController.getTaskById);
+app.post('/task/:id', passportConfig.isAuthenticated, taskController.postTaskById);
+app.delete('/task/:id', passportConfig.isAuthenticated, taskController.deleteTaskById);
+app.post('/task/:id/completion', passportConfig.isAuthenticated, taskController.postTaskCompletion);
 
 /**
  * Error Handler.

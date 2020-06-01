@@ -72,14 +72,59 @@ exports.getTask = (req, res, next) => {
   });
 };
 
+/**
+ * GET /task/:id
+ * Get details of a single task
+ */
 exports.getTaskById = (req, res, next) => {
-  console.log(req.params.id);
   Task.findById(req.params.id, (err, task) => {
     if (err) {
       return next(err);
     }
     res.json(task);
   })
+};
+
+/**
+ * POST /task/:id
+ * Update a task
+ */
+exports.postTaskById = (req, res, next) => {
+  Task.findByIdAndUpdate(req.params.id, { name: req.body.name, date: req.body.date } , (err, task) => {
+    if (err)
+      return next(err);
+    if (req.body.date === task.date) {
+      res.status(200).send();
+    }
+
+    async.parallel([(callback) => {
+      Day.findOneAndUpdate({date: task.date, userId: req.user._id}, { $pull: { task_ids: task._id } }, (err) => {
+        if (err)
+          return next(err);
+        callback();
+      })
+    }, (callback) => {
+      Day.findOneAndUpdate({date: req.body.date, userId: req.user._id}, { $push: { task_ids: task._id } }, (err, day) => {
+        if (err)
+          return next(err);
+        if (day) {
+          callback();
+        }
+        else {
+          Day.create({ date: req.body.date, task_ids: [task._id], userId: req.user._id }, (err) => {
+            if (err)
+              return next(err);
+            callback();
+          })
+        }
+      })
+    }], (err) => {
+      if (err)
+        return next(err);
+      res.status(200).send();
+    });
+
+  });
 };
 
 /**
@@ -181,10 +226,10 @@ exports.postTask = (req, res, next) => {
  * POST /task/delete
  * Delete task.
  */
-exports.postDeleteTask = (req, res, next) => {
-  Task.deleteOne({ _id: req.body.taskId }, (err) => {
+exports.deleteTaskById = (req, res, next) => {
+  Task.deleteOne({ _id: req.params.id }, (err) => {
     if (err) { return next(err); }
-    Day.findByIdAndUpdate(req.body.dayId, { $pull: { task_ids: req.body.taskId } }, (err) => {
+    Day.findByIdAndUpdate(req.body.dayId, { $pull: { task_ids: req.params.id } }, (err) => {
       if (err) { return next(err); }
       res.status(202).send();
     });
@@ -196,8 +241,7 @@ exports.postDeleteTask = (req, res, next) => {
  * Updated the completed status of a task
  */
 exports.postTaskCompletion = (req, res, next) => {
-  console.log(req.body);
-  Task.findByIdAndUpdate(req.body.taskId, { completed: req.body.completed }, (err) => {
+  Task.findByIdAndUpdate(req.params.id, { completed: req.body.completed }, (err) => {
     if (err) { return next(err); }
     res.status(202).send();
   });

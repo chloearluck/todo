@@ -23,12 +23,10 @@ class Task extends Component {
     this.setState({ checked: this.props.task.completed });
   }
 
-  handleDelete() {
-    console.log('delete task');
-    console.log('task id: ' + this.props.task._id);
-    console.log('day id: ' + this.props.day_id);
+  handleDelete(event) {
+    event.stopPropagation();
 
-    axios.post('/task/delete', { taskId: this.props.task._id, dayId: this.props.day_id })
+    axios.delete('/task/'+this.props.task._id, { dayId: this.props.day_id })
       .then((res) => {
         if (res.status === 202) {
           this.props.getTasks();
@@ -44,9 +42,8 @@ class Task extends Component {
   handleCheckChange(event) {
     this.setState({ checked: !this.state.checked });
 
-    axios.post('/task/completion', { taskId: this.props.task._id, completed: !this.state.checked })
+    axios.post('/task/'+this.props.task._id+'/completion', { completed: !this.state.checked })
       .then((res) => {
-        console.log(res);
         if (!res.status === 202) {
           this.props.getTasks();
         }
@@ -58,7 +55,6 @@ class Task extends Component {
   }
 
   handleEdit(event) {
-    console.log('clicked edit');
     this.props.updateModal(this.props.task._id);
   }
 
@@ -67,7 +63,7 @@ class Task extends Component {
 
     return (
     <ListGroup.Item bsPrefix="list-group-item d-flex justify-content-between" onClick={this.handleEdit}>
-      <Form.Check type="checkbox" checked={this.state.checked} onChange={this.handleCheckChange} label={label}/>
+      <Form.Check type="checkbox" checked={this.state.checked} onChange={this.handleCheckChange} onClick={(e) => e.stopPropagation()} label={label}/>
       <span>
         <Badge variant="secondary" onClick={this.handleDelete}>x</Badge>
       </span>

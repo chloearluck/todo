@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -9,6 +11,7 @@ class TaskModal extends Component {
 
     this.state = {
       name: null,
+      date: null,
     }
 
     this.updateForm = this.updateForm.bind(this);
@@ -18,9 +21,7 @@ class TaskModal extends Component {
   }
 
   updateForm() {
-    console.log('updateForm');
-    this.setState({ name: this.props.task.name });
-    console.log(this.state.name);
+    this.setState({ name: this.props.task.name , date: this.props.task.date.split('T')[0]});
   }
 
   handleCloseModal() {
@@ -35,8 +36,14 @@ class TaskModal extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    console.log('send post with new name: '+this.state.name);
-    //TO DO: send axios.post with new name
+    axios.post('/task/'+this.props.task._id, { name: this.state.name, date: this.state.date+'T00:00:00.000Z' })
+      .then((res) => {
+        this.props.getTasks();
+        this.handleCloseModal();
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   }
 
   render() {
@@ -50,6 +57,9 @@ class TaskModal extends Component {
           <Form>
             <Form.Label>Task Name</Form.Label>
             <Form.Control type="text" name="name" value={this.state.name || ''} onChange={this.handleChange} autoComplete="off" />
+
+            <Form.Label>Date</Form.Label>
+            <Form.Control type="date" name="date" value={this.state.date || ''} onChange={this.handleChange}/>
           </Form>
 
         </Modal.Body>

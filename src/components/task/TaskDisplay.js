@@ -40,8 +40,6 @@ class TaskDisplay extends Component {
   }
 
   updateModal(taskId) {
-    console.log('updateModal: '+ taskId);
-
     if (taskId) {
       axios.get('/task/'+taskId)
         .then( (res) => {
@@ -65,7 +63,7 @@ class TaskDisplay extends Component {
         <Row>
           {this.state.tasks.map( (day) => { return <Day day={day} key={day.day_id} getTasks={this.getTasks} updateModal={this.updateModal} />; })}
         </Row>
-      <TaskModal ref={this.taskModalElement} task={this.state.modalTask} updateModal={this.updateModal}/>
+      <TaskModal ref={this.taskModalElement} task={this.state.modalTask} updateModal={this.updateModal} getTasks={this.getTasks}/>
       </Container>
     );
   }
