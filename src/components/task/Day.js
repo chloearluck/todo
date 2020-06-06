@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Droppable } from 'react-beautiful-dnd';
 import Task from './Task';
 import axios from 'axios';
 
@@ -45,9 +46,14 @@ class Day extends Component {
     return (
     <Col lg={3} md={6}> {/*on large viewports, each column takes up 3/12=1/4 of the screen, on medium 6/12=1/2*/}
       <h4>{this.props.day.dateString}</h4>
-      <ListGroup>
-        {this.props.day.tasks.map( (task) => { if (task) return <Task task={task} key={task._id} day_id={this.props.day.day_id} getTasks={this.props.getTasks} updateModal={this.props.updateModal}/>; else return null; })}
-      </ListGroup>
+      <Droppable droppableId={this.props.day.day_id}>
+      {(provided) => (
+        <ListGroup {...provided.droppableProps} ref={provided.innerRef}>
+          {this.props.day.tasks.map( (task, index) => { if (task) return <Task task={task} key={task._id} day_id={this.props.day.day_id} getTasks={this.props.getTasks} updateModal={this.props.updateModal} index={index}/>; else return null; })}
+          {provided.placeholder}
+        </ListGroup>
+      )}
+      </Droppable>
       <Form onSubmit={this.handleSubmit}>
         <Form.Control type="text" value={this.state.newTaskName} name="newTaskName" onChange={this.handleChange} autoComplete="off" />
         <Button variant="primary" type="sumbit">Add</Button>

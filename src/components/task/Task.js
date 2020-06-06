@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
 
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -62,12 +63,16 @@ class Task extends Component {
     const label = (this.state.checked? <strike>{this.props.task.name}</strike> : this.props.task.name);
 
     return (
-    <ListGroup.Item bsPrefix="list-group-item d-flex justify-content-between" onClick={this.handleEdit}>
-      <Form.Check type="checkbox" checked={this.state.checked} onChange={this.handleCheckChange} onClick={(e) => e.stopPropagation()} label={label}/>
-      <span>
-        <Badge variant="secondary" onClick={this.handleDelete}>x</Badge>
-      </span>
-    </ListGroup.Item>
+      <Draggable draggableId={this.props.task._id} index={this.props.index}>
+      { (provided) => (
+        <ListGroup.Item bsPrefix="list-group-item d-flex justify-content-between" onClick={this.handleEdit} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+          <Form.Check type="checkbox" checked={this.state.checked} onChange={this.handleCheckChange} onClick={(e) => e.stopPropagation()} label={label}/>
+          <span>
+            <Badge variant="secondary" onClick={this.handleDelete}>x</Badge>
+          </span>
+        </ListGroup.Item>
+      )}
+      </Draggable>
     );
   }
 }

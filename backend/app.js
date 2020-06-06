@@ -134,6 +134,7 @@ app.get('/task/:id', passportConfig.isAuthenticated, taskController.getTaskById)
 app.post('/task/:id', passportConfig.isAuthenticated, taskController.postTaskById);
 app.post('/task/:id/delete', passportConfig.isAuthenticated, taskController.deleteTaskById);
 app.post('/task/:id/completion', passportConfig.isAuthenticated, taskController.postTaskCompletion);
+app.post('/day/:id', passportConfig.isAuthenticated, taskController.postDay);
 
 /**
  * Error Handler.

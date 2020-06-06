@@ -237,7 +237,7 @@ exports.deleteTaskById = (req, res, next) => {
 };
 
 /**
- * POST /task/completion
+ * POST /task/:id/completion
  * Updated the completed status of a task
  */
 exports.postTaskCompletion = (req, res, next) => {
@@ -246,3 +246,14 @@ exports.postTaskCompletion = (req, res, next) => {
     res.status(202).send();
   });
 };
+
+/**
+ * POST /day/:id
+ * Update task list for a day
+ */
+exports.postDay = (req, res, next) => {
+  Day.findByIdAndUpdate(req.params.id, { task_ids: req.body.task_ids }, (err) => {
+    if (err) { return next(err); }
+    res.status(200).send();
+  })
+}
